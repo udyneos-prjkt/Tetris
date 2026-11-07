@@ -1,0 +1,94 @@
+name: Neon Tetris - Test & Build Android
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Build AAB bertanda tangan (rilis Play Store)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  checks: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+
+jobs:
+  test:
+    name: EditMode tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-test-${{ hashFiles('Packages/manifest.json', 'ProjectSettings/ProjectVersion.txt') }}
+          restore-keys: Library-test-
+      - uses: game-ci/unity-test-runner@v4
+        with:
+          testMode: editmode
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+  build:
+    name: Build Android
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: false
+          large-packages: false
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-Android-${{ hashFiles('Packages/manifest.json', 'ProjectSettings/ProjectVersion.txt') }}
+          restore-keys: Library-Android-
+
+      - name: Decode keystore
+        if: ${{ inputs.release == true }}
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          test -n "$KEYSTORE_B64" || { echo "Secret ANDROID_KEYSTORE_BASE64 kosong"; exit 1; }
+          echo "$KEYSTORE_B64" | base64 -d > release.keystore
+
+      - name: Build APK (debug-signed)
+        if: ${{ inputs.release != true }}
+        uses: game-ci/unity-builder@v4
+        with:
+          targetPlatform: Android
+          buildMethod: BuildScript.BuildAndroid
+          versioning: None
+          customParameters: -packageId com.udyneos.neontetris -versionCode ${{ github.run_number }} -aab false
+
+      - name: Build AAB (release-signed)
+        if: ${{ inputs.release == true }}
+        uses: game-ci/unity-builder@v4
+        with:
+          targetPlatform: Android
+          buildMethod: BuildScript.BuildAndroid
+          versioning: None
+          customParameters: -packageId com.udyneos.neontetris -versionCode ${{ github.run_number }} -aab true -keystorePath release.keystore -keystorePass ${{ secrets.ANDROID_KEYSTORE_PASS }} -keyAlias ${{ secrets.ANDROID_KEY_ALIAS }} -keyAliasPass ${{ secrets.ANDROID_KEY_ALIAS_PASS }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NeonTetris-Android-${{ github.run_number }}
+          path: build/Android
+          if-no-files-found: error
