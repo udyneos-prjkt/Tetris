@@ -1,0 +1,49 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // Profil pemain. Dibuat sekali oleh klien dengan nilai awal tetap;
+    // update/hapus HANYA lewat Cloud Functions (Admin SDK melewati aturan ini).
+    // Ini mencegah manipulasi coins/gold/title dari klien.
+    match /users/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn()
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['nickname', 'nicknameLower', 'title', 'coins', 'gold', 'createdAt'])
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.matches('^[A-Za-z0-9_]{3,16}$')
+        && request.resource.data.nicknameLower == request.resource.data.nickname.lower()
+        && request.resource.data.title == 'Rookie'
+        && request.resource.data.coins == 0
+        && request.resource.data.gold == 0
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
+    // Pemesanan nickname unik. Tidak bisa dibaca klien (tidak membocorkan uid);
+    // dokumen yang sudah ada tidak bisa ditimpa, sehingga nickname ganda ditolak.
+    match /nicknames/{nick} {
+      allow read: if false;
+      allow create: if signedIn()
+        && nick.matches('^[a-z0-9_]{3,16}$')
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // Leaderboard: baca oleh pemain login, tulis hanya oleh server (validasi skor).
+    match /leaderboards/{season}/entries/{uid} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
