@@ -1,6 +1,8 @@
 plugins {
     id "com.android.application"
 }
+def vName = project.hasProperty("versionName") ? project.property("versionName") : "2.0"
+def vCode = project.hasProperty("versionCode") ? project.property("versionCode").toInteger() : 5
 
 android {
     namespace "com.udyneos.neontetris"
@@ -24,12 +26,33 @@ android {
         }
     }
 
-    buildTypes {
+    signingConfigs {
         release {
-            minifyEnabled false
+            def path = System.getenv("KEYSTORE_PATH")
+            if (path != null && !path.trim().isEmpty() && file(path).exists()) {
+                storeFile file(path)
+                storePassword System.getenv("KEYSTORE_PASSWORD")
+                keyAlias System.getenv("KEY_ALIAS")
+                keyPassword System.getenv("KEY_PASSWORD")
+            }
         }
     }
 
+    buildTypes {
+        release {
+            minifyEnabled false // Set true jika ingin ukuran rilis lebih kecil
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            
+            // Logika fallback: jika ada KEYSTORE_PATH di CI, pakai release. Jika lokal, pakai debug.
+            def path = System.getenv("KEYSTORE_PATH")
+            if (path != null && !path.trim().isEmpty()) {
+                signingConfig signingConfigs.release
+            } else {
+                signingConfig signingConfigs.debug
+            }
+        }
+    }
+    
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
