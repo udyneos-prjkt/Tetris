@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "419599214243",
+    "project_id": "udyneos-15798",
+    "storage_bucket": "udyneos-15798.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:419599214243:android:c9ae2aa008386138590116",
+        "android_client_info": {
+          "package_name": "com.udyneos.neontetris"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "419599214243-h07n72gtvpm5lbrkmsd4nq1b1hank0nt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.udyneos.neontetris",
+            "certificate_hash": "0b09dfd87a66346f8976d066b2ab1a3af2e50e3c"
+          }
+        },
+        {
+          "client_id": "419599214243-qa1sqm1makj7acggvekc2f4rmlsuo09m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXwATHJCLb7NlBOdA0Q-wGmAgVTadAC0w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "419599214243-qa1sqm1makj7acggvekc2f4rmlsuo09m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
