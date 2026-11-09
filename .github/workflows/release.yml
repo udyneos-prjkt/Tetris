@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Tag versi rilis'
+        description: 'Tag versi rilis v1.1'
         required: true
-        default: 'v1.0'
+        default: 'v1.1'
 
 permissions:
   contents: write
@@ -70,7 +70,7 @@ jobs:
         id: apk
         run: |
           SRC=$(ls app/build/outputs/apk/release/*.apk | head -n1)
-          OUT="Resteam-${{ steps.ver.outputs.tag }}.apk"
+          OUT="NeonTetris-${{ steps.ver.outputs.tag }}.apk"
           cp "$SRC" "$OUT"
           APKSIGNER="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -n1)apksigner"
           "$APKSIGNER" verify --verbose "$OUT"
@@ -85,7 +85,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.ver.outputs.tag }}
-          name: Resteam ${{ steps.ver.outputs.tag }}
+          name: NeonTetris ${{ steps.ver.outputs.tag }}
           body_path: notes.md
           prerelease: ${{ steps.ver.outputs.pre }}
           files: ${{ steps.apk.outputs.file }}

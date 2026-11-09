@@ -1,4 +1,4 @@
-# Neon Tetris v1.1 beta (C++ native, tanpa Unity)
+# Neon Tetris v1.1 (C++ native, tanpa Unity)
 
 Arsitektur: core C++17 (`tetris_core`) + renderer OpenGL ES 3 (C++) + shell Java (Activity, gestur, HUD).
 Java dipertahankan karena Firebase, AdMob, dan Play Billing adalah SDK Java.

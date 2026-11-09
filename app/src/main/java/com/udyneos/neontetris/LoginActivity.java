@@ -39,6 +39,15 @@ public final class LoginActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         buildUi();
+        setBusy(true);
+        statusText.setText("Memeriksa pembaruan...");
+        UpdateUi.run(this, this::startup);
+    }
+
+    /** Dijalankan setelah gerbang update selesai (tidak ada update atau pengecekan gagal). */
+    private void startup() {
+        busy = false;
+        statusText.setText("");
 
         if (!AuthManager.isConfigured(this)) {
             statusText.setText("Firebase belum dikonfigurasi (google-services.json tidak ada). Mode offline saja.");
@@ -48,6 +57,7 @@ public final class LoginActivity extends Activity {
         }
 
         auth = new AuthManager();
+        setBusy(false);
         FirebaseUser user = auth.currentUser();
         if (user != null) proceed(user.getUid());
     }

@@ -166,13 +166,13 @@ final class AuthManager {
                             return;
                         }
                         try {
-                        String idToken = GoogleIdTokenCredential.createFrom(credential.getData()).getIdToken();
-                        AuthCredential firebaseCred = GoogleAuthProvider.getCredential(idToken, null);
-                        auth.signInWithCredential(firebaseCred)
-                                .addOnSuccessListener(r -> cb.onSuccess(null))
-                                .addOnFailureListener(e -> cb.onError(describe(e)));
-                    } catch (Exception e) { // Changed to catch a generic Exception
-                        cb.onError("Token Google tidak valid");
+                            String idToken = GoogleIdTokenCredential.createFrom(credential.getData()).getIdToken();
+                            AuthCredential firebaseCred = GoogleAuthProvider.getCredential(idToken, null);
+                            auth.signInWithCredential(firebaseCred)
+                                    .addOnSuccessListener(r -> cb.onSuccess(null))
+                                    .addOnFailureListener(e -> cb.onError(describe(e)));
+                        } catch (GoogleIdTokenParsingException e) {
+                            cb.onError("Token Google tidak valid");
                         }
                     }
 

@@ -11,32 +11,27 @@ import javax.microedition.khronos.opengles.GL10;
 
 final class GameRenderer implements GLSurfaceView.Renderer {
     interface StatsListener {
-        void onStats(long score, int level, int lines, boolean gameOver);
+        void onStats(long score, int level, int lines, int pieces, boolean gameOver);
     }
 
     private final StatsListener listener;
     private final Handler ui = new Handler(Looper.getMainLooper());
     private long lastNanos;
     private long[] lastStats;
-    private boolean started;
 
     GameRenderer(StatsListener listener) {
         this.listener = listener;
     }
 
-    /** Harus dipanggil dari thread GL. */
-    void restart() {
-        Native.newGame((int) System.nanoTime());
+    /** Harus dipanggil dari thread GL. Seed berasal dari server (atau lokal untuk mode offline). */
+    void restart(int seed) {
+        Native.newGame(seed);
         lastStats = null;
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         Native.surfaceCreated();
-        if (!started) {
-            restart();
-            started = true;
-        }
         lastNanos = 0;
     }
 
@@ -57,7 +52,7 @@ final class GameRenderer implements GLSurfaceView.Renderer {
         final long[] s = Native.stats();
         if (s != null && !Arrays.equals(s, lastStats)) {
             lastStats = s;
-            ui.post(() -> listener.onStats(s[0], (int) s[1], (int) s[2], s[3] == 1L));
+            ui.post(() -> listener.onStats(s[0], (int) s[1], (int) s[2], (int) s[4], s[3] == 1L));
         }
     }
 }

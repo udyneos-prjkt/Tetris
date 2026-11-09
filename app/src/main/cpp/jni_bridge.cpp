@@ -47,17 +47,18 @@ JNIEXPORT void JNICALL Java_com_udyneos_neontetris_Native_hold(JNIEnv*, jclass) 
     if (g_game) g_game->hold();
 }
 
-// {skor, level, lines, gameOver(0/1)}
+// {skor, level, lines, gameOver(0/1), pieces}
 JNIEXPORT jlongArray JNICALL Java_com_udyneos_neontetris_Native_stats(JNIEnv* env, jclass) {
-    jlong v[4] = {0, 1, 0, 0};
+    jlong v[5] = {0, 1, 0, 0, 0};
     if (g_game) {
         v[0] = g_game->score();
         v[1] = g_game->level();
         v[2] = g_game->lines();
         v[3] = g_game->gameOver() ? 1 : 0;
+        v[4] = g_game->pieces();
     }
-    jlongArray arr = env->NewLongArray(4);
-    if (arr != nullptr) env->SetLongArrayRegion(arr, 0, 4, v);
+    jlongArray arr = env->NewLongArray(5);
+    if (arr != nullptr) env->SetLongArrayRegion(arr, 0, 5, v);
     return arr;
 }
 

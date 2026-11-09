@@ -7,3 +7,6 @@
 *.aab
 *.keystore
 *.jks
+app/google-services.json
+keystore.properties
+release.keystore

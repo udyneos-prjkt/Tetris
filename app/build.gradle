@@ -1,7 +1,7 @@
 plugins {
     id "com.android.application"
 }
-def vName = project.hasProperty("versionName") ? project.property("versionName") : "2.0"
+def vName = project.hasProperty("versionName") ? project.property("versionName") : "1.1"
 def vCode = project.hasProperty("versionCode") ? project.property("versionCode").toInteger() : 5
 
 android {
@@ -14,7 +14,7 @@ android {
         minSdk 23            // Android 6.0
         targetSdk 34
         versionCode 1
-        versionName "1.1.0-beta"
+        versionName "1.1"
 
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a"

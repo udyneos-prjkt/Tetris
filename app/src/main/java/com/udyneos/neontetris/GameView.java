@@ -35,8 +35,8 @@ final class GameView extends GLSurfaceView {
         setRenderMode(RENDERMODE_CONTINUOUSLY);
     }
 
-    void restart() {
-        queueEvent(renderer::restart);
+    void restart(int seed) {
+        queueEvent(() -> renderer.restart(seed));
     }
 
     @Override

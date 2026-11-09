@@ -13,3 +13,19 @@
 
 Tanpa `google-services.json` aplikasi tetap terbuild dan hanya menyediakan tombol MAIN OFFLINE.
 Rilis Play Store butuh SHA-1 dari keystore rilis (dan SHA-1 App Signing Play Console).
+
+# Anti-cheat & ranking (Cloud Functions)
+
+Syarat: proyek harus memakai paket **Blaze** (bayar sesuai pemakaian; kuota gratis bulanan cukup besar untuk beta).
+
+    cd firebase/functions && npm install && npm test && cd ..
+    npx firebase-tools deploy --only functions,firestore:rules --project <ID_PROYEK>
+
+Alur: `startRun` (seed dari server) -> main -> `submitScore` (validasi, leaderboard mingguan, koin, julukan).
+Setelah deploy, aktifkan TTL: Firestore > Indexes > TTL > koleksi `runs`, field `expireAt` (agar sesi lama terhapus otomatis).
+
+## Batasan yang perlu diketahui
+Validasi saat ini memeriksa kewajaran (kecepatan blok, jumlah baris, batas skor teoritis), bukan memutar ulang permainan.
+Klien yang dimodifikasi tetap bisa mengirim angka yang tampak wajar. Langkah penguatan berikutnya:
+(1) Firebase App Check + Play Integrity agar hanya APK asli yang boleh memanggil Functions,
+(2) verifikasi replay: klien mengirim log input, server memutar ulang core (deterministik, seed dari server).
