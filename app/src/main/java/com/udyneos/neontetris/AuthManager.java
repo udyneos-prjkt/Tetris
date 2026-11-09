@@ -171,7 +171,7 @@ final class AuthManager {
                             auth.signInWithCredential(firebaseCred)
                                     .addOnSuccessListener(r -> cb.onSuccess(null))
                                     .addOnFailureListener(e -> cb.onError(describe(e)));
-                        } catch (GoogleIdTokenParsingException e) {
+                        } catch (Exception e) {
                             cb.onError("Token Google tidak valid");
                         }
                     }
