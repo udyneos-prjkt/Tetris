@@ -174,6 +174,7 @@ final class AuthManager {
                     } catch (Exception e) { // Changed to catch a generic Exception
                         cb.onError("Token Google tidak valid");
                         }
+                    }
 
                     @Override
                     public void onError(@NonNull GetCredentialException e) {
